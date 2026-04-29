@@ -31,7 +31,9 @@ export default function Login() {
       <div className="gradient-border w-full max-w-md">
         <div className="bg-panel rounded-2xl p-8">
           <h1 className="text-2xl font-semibold">Sign in to CodeGuard</h1>
-          <p className="text-sm text-mist/70 mt-2">Keep your codebase healthy and secure.</p>
+          <p className="text-sm text-mist/70 mt-2">
+            Keep your codebase healthy and secure.
+          </p>
           <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="text-sm text-mist/70">Email</label>

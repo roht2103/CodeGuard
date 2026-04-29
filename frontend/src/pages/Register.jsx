@@ -16,7 +16,11 @@ export default function Register() {
     event.preventDefault();
     setLoading(true);
     try {
-      const response = await api.post("/api/auth/register", { name, email, password });
+      const response = await api.post("/api/auth/register", {
+        name,
+        email,
+        password,
+      });
       login(response.data);
       toast.success("Account created!");
       navigate("/dashboard");
@@ -31,8 +35,12 @@ export default function Register() {
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4">
       <div className="gradient-border w-full max-w-md">
         <div className="bg-panel rounded-2xl p-8">
-          <h1 className="text-2xl font-semibold">Create your CodeGuard account</h1>
-          <p className="text-sm text-mist/70 mt-2">Monitor quality trends across every scan.</p>
+          <h1 className="text-2xl font-semibold">
+            Create your CodeGuard account
+          </h1>
+          <p className="text-sm text-mist/70 mt-2">
+            Monitor quality trends across every scan.
+          </p>
           <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="text-sm text-mist/70">Name</label>

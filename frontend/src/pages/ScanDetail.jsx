@@ -63,7 +63,13 @@ export default function ScanDetail() {
 
         <div className="grid gap-4">
           {scan.vulnerabilities.map((vulnerability) => (
-            <VulnerabilityCard key={vulnerability.id || `${vulnerability.type}-${vulnerability.lineNumber}`} vulnerability={vulnerability} />
+            <VulnerabilityCard
+              key={
+                vulnerability.id ||
+                `${vulnerability.type}-${vulnerability.lineNumber}`
+              }
+              vulnerability={vulnerability}
+            />
           ))}
           {scan.vulnerabilities.length === 0 && (
             <p className="text-mist/70">No vulnerabilities found.</p>

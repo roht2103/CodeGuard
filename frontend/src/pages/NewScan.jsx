@@ -39,7 +39,7 @@ export default function NewScan() {
       const formData = new FormData();
       formData.append("file", file);
       const response = await api.post("/api/scans/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
+        headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Scan complete.");
       navigate(`/scans/${response.data.id}`);
@@ -55,7 +55,9 @@ export default function NewScan() {
       <div className="max-w-3xl mx-auto space-y-6">
         <div>
           <h1 className="text-3xl font-semibold">New Scan</h1>
-          <p className="text-sm text-mist/70">Drop a file to run the static analysis engine.</p>
+          <p className="text-sm text-mist/70">
+            Drop a file to run the static analysis engine.
+          </p>
         </div>
 
         <div

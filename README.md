@@ -3,6 +3,7 @@
 CodeGuard is a static code analysis and quality dashboard that scans source files, detects common vulnerabilities, and visualizes trends and metrics in a modern web UI.
 
 ## Tech Stack
+
 - Backend: Java Spring Boot (Maven)
 - Frontend: React + Vite + TailwindCSS
 - Database: PostgreSQL
@@ -12,6 +13,7 @@ CodeGuard is a static code analysis and quality dashboard that scans source file
 ## Local Setup
 
 ### Backend
+
 1. Create a PostgreSQL database named `codeguard`.
 2. Set the required environment variables:
    - `DB_URL`
@@ -26,6 +28,7 @@ CodeGuard is a static code analysis and quality dashboard that scans source file
 The API will run on port `8080`.
 
 ### Frontend
+
 1. Set the environment variable in `frontend/.env`:
    - `VITE_API_URL=http://localhost:8080`
 2. From the frontend folder:
@@ -37,6 +40,7 @@ The app will run on port `5173` by default.
 ## Environment Variables
 
 ### Backend
+
 - `DB_URL` - JDBC URL for PostgreSQL
 - `DB_USERNAME` - Database username
 - `DB_PASSWORD` - Database password
@@ -45,8 +49,10 @@ The app will run on port `5173` by default.
 - `FRONTEND_URL` - Deployed frontend URL for CORS
 
 ### Frontend
+
 - `VITE_API_URL` - Backend API base URL
 
 ## Live Demo
+
 - Frontend: <YOUR_VERCEL_URL>
 - Backend: <YOUR_RENDER_URL>

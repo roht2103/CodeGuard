@@ -15,12 +15,14 @@ export default function Dashboard() {
       try {
         const [statsResponse, scansResponse] = await Promise.all([
           api.get("/api/dashboard/stats"),
-          api.get("/api/scans")
+          api.get("/api/scans"),
         ]);
         setStats(statsResponse.data);
         setScans(scansResponse.data);
       } catch (error) {
-        toast.error(error.response?.data?.message || "Failed to load dashboard.");
+        toast.error(
+          error.response?.data?.message || "Failed to load dashboard.",
+        );
       } finally {
         setLoading(false);
       }
@@ -41,7 +43,9 @@ export default function Dashboard() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold">Quality Dashboard</h1>
-            <p className="text-sm text-mist/70">Track every scan, trend, and vulnerability.</p>
+            <p className="text-sm text-mist/70">
+              Track every scan, trend, and vulnerability.
+            </p>
           </div>
           <Link
             to="/new-scan"
@@ -52,14 +56,25 @@ export default function Dashboard() {
         </div>
 
         {loading ? (
-          <div className="bg-panel rounded-2xl p-10 text-center">Loading dashboard...</div>
+          <div className="bg-panel rounded-2xl p-10 text-center">
+            Loading dashboard...
+          </div>
         ) : (
           <>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <StatsCard label="Total Scans" value={stats?.totalScans ?? 0} />
-              <StatsCard label="Total Vulnerabilities" value={stats?.totalVulnerabilities ?? 0} />
-              <StatsCard label="Average Quality" value={stats?.averageQualityScore ?? 0} />
-              <StatsCard label="Critical Issues" value={stats?.criticalTotal ?? 0} />
+              <StatsCard
+                label="Total Vulnerabilities"
+                value={stats?.totalVulnerabilities ?? 0}
+              />
+              <StatsCard
+                label="Average Quality"
+                value={stats?.averageQualityScore ?? 0}
+              />
+              <StatsCard
+                label="Critical Issues"
+                value={stats?.criticalTotal ?? 0}
+              />
             </div>
 
             <div className="bg-panel rounded-2xl p-6">
@@ -73,7 +88,9 @@ export default function Dashboard() {
             <div className="bg-panel rounded-2xl p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">Recent Scans</h2>
-                <span className="text-xs text-mist/60">{scans.length} total</span>
+                <span className="text-xs text-mist/60">
+                  {scans.length} total
+                </span>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -92,7 +109,9 @@ export default function Dashboard() {
                       <tr key={scan.id} className="border-t border-tide/10">
                         <td className="py-3">{scan.fileName}</td>
                         <td className="py-3">{scan.language}</td>
-                        <td className={`py-3 font-semibold ${scoreColor(scan.qualityScore)}`}>
+                        <td
+                          className={`py-3 font-semibold ${scoreColor(scan.qualityScore)}`}
+                        >
                           {scan.qualityScore}
                         </td>
                         <td className="py-3">{scan.totalVulnerabilities}</td>
