@@ -2,38 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
-}
-
-body {
-  font-family: "Trebuchet MS", "Gill Sans", "Segoe UI", sans-serif;
-  background: radial-gradient(
-    circle at top left,
-    #1b4965,
-    #0f1b2d 55%,
-    #08111d
-  );
-  min-height: 100vh;
-}
-
-.bg-panel {
-  background: rgba(15, 27, 45, 0.75);
-  border: 1px solid rgba(95, 168, 211, 0.2);
-  box-shadow: 0 20px 60px rgba(8, 17, 29, 0.4);
-  backdrop-filter: blur(10px);
-}
-
-.gradient-border {
-  background: linear-gradient(
-    135deg,
-    rgba(95, 168, 211, 0.35),
-    rgba(0, 168, 150, 0.35)
-  );
-  padding: 1px;
-  border-radius: 16px;
-}
-
-.glow {
-  box-shadow: 0 0 30px rgba(95, 168, 211, 0.25);
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200;
+  }
 }

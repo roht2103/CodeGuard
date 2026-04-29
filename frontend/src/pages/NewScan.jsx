@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { UploadCloud } from "lucide-react";
 import api from "../api/axios.js";
+import { Card } from "../components/Card.jsx";
+import { Button } from "../components/Button.jsx";
 
 const allowedExtensions = [".java", ".js", ".py"];
 
@@ -51,19 +53,23 @@ export default function NewScan() {
   };
 
   return (
-    <div className="px-6 pb-10">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <div className="px-6 py-8">
+      <div className="max-w-3xl mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl font-semibold">New Scan</h1>
-          <p className="text-sm text-mist/70">
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+            New Scan
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Drop a file to run the static analysis engine.
           </p>
         </div>
 
-        <div
-          className={`bg-panel rounded-2xl p-10 border-2 border-dashed ${
-            dragging ? "border-neon" : "border-tide/40"
-          } text-center transition`}
+        <Card 
+          className={`p-12 border-2 border-dashed flex flex-col items-center justify-center transition-all ${
+            dragging 
+              ? "border-blue-500 bg-blue-50/50 dark:border-indigo-500 dark:bg-indigo-900/20" 
+              : "border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+          }`}
           onDragOver={(event) => {
             event.preventDefault();
             setDragging(true);
@@ -71,15 +77,16 @@ export default function NewScan() {
           onDragLeave={() => setDragging(false)}
           onDrop={handleDrop}
         >
-          <UploadCloud className="mx-auto text-tide" size={42} />
-          <p className="mt-4 text-mist/70">Drag & drop a file here, or</p>
-          <button
+          <UploadCloud className="text-blue-500 dark:text-indigo-400 mb-4" size={48} strokeWidth={1.5} />
+          <p className="text-gray-600 dark:text-gray-300 font-medium">Drag & drop a file here, or</p>
+          <Button
             type="button"
+            variant="outline"
             onClick={() => inputRef.current?.click()}
-            className="mt-4 rounded-full border border-tide/50 px-4 py-2 text-tide hover:bg-tide/10"
+            className="mt-4"
           >
             Browse files
-          </button>
+          </Button>
           <input
             ref={inputRef}
             type="file"
@@ -88,17 +95,23 @@ export default function NewScan() {
             onChange={(event) => handleFile(event.target.files[0])}
           />
           {file && (
-            <p className="mt-4 text-sm text-neon">Selected: {file.name}</p>
+            <div className="mt-6 px-4 py-2 bg-blue-50 dark:bg-indigo-900/30 text-blue-700 dark:text-indigo-300 rounded-lg text-sm font-medium flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-blue-500 dark:bg-indigo-400"></span>
+              {file.name}
+            </div>
           )}
-        </div>
+        </Card>
 
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="rounded-full bg-neon text-ink px-6 py-2 font-semibold hover:bg-neon/90 disabled:opacity-60"
-        >
-          {loading ? "Scanning..." : "Run Scan"}
-        </button>
+        <div className="flex justify-end">
+          <Button
+            onClick={handleSubmit}
+            disabled={loading}
+            variant="primary"
+            size="lg"
+          >
+            {loading ? "Scanning..." : "Run Scan"}
+          </Button>
+        </div>
       </div>
     </div>
   );

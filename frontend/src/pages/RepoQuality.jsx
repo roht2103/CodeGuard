@@ -3,6 +3,8 @@ import toast from "react-hot-toast";
 import api from "../api/axios.js";
 import StatsCard from "../components/StatsCard.jsx";
 import TrendChart from "../components/TrendChart.jsx";
+import { Card } from "../components/Card.jsx";
+import { Button } from "../components/Button.jsx";
 
 export default function RepoQuality() {
   const [owner, setOwner] = useState("");
@@ -67,82 +69,84 @@ export default function RepoQuality() {
     }
   };
 
+  const inputClasses = "mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-950 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500 transition-colors";
+  const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-300";
+
   return (
-    <div className="px-6 pb-10">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="px-6 py-8">
+      <div className="max-w-7xl mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl font-semibold">Repo Quality Dashboard</h1>
-          <p className="text-sm text-mist/70">
-            Analyze a GitHub repository for complexity, duplication, and style
-            trends.
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Repo Quality Dashboard</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Analyze a GitHub repository for complexity, duplication, and style trends.
           </p>
         </div>
 
-        <div className="bg-panel rounded-2xl p-6 grid gap-4 md:grid-cols-2">
+        <Card className="grid gap-6 md:grid-cols-2">
           <div>
-            <label className="text-sm text-mist/70">Owner</label>
+            <label className={labelClasses}>Owner</label>
             <input
               value={owner}
               onChange={(event) => setOwner(event.target.value)}
-              className="mt-2 w-full rounded-lg bg-ink/60 border border-tide/30 px-3 py-2 focus:outline-none focus:border-tide"
+              className={inputClasses}
               placeholder="octocat"
             />
           </div>
           <div>
-            <label className="text-sm text-mist/70">Repository</label>
+            <label className={labelClasses}>Repository</label>
             <input
               value={repo}
               onChange={(event) => setRepo(event.target.value)}
-              className="mt-2 w-full rounded-lg bg-ink/60 border border-tide/30 px-3 py-2 focus:outline-none focus:border-tide"
+              className={inputClasses}
               placeholder="hello-world"
             />
           </div>
           <div>
-            <label className="text-sm text-mist/70">Branch (optional)</label>
+            <label className={labelClasses}>Branch (optional)</label>
             <input
               value={branch}
               onChange={(event) => setBranch(event.target.value)}
-              className="mt-2 w-full rounded-lg bg-ink/60 border border-tide/30 px-3 py-2 focus:outline-none focus:border-tide"
+              className={inputClasses}
               placeholder="main"
             />
           </div>
           <div>
-            <label className="text-sm text-mist/70">
+            <label className={labelClasses}>
               GitHub Token (optional)
             </label>
             <input
               value={token}
               onChange={(event) => setToken(event.target.value)}
-              className="mt-2 w-full rounded-lg bg-ink/60 border border-tide/30 px-3 py-2 focus:outline-none focus:border-tide"
+              className={inputClasses}
               placeholder="ghp_xxx"
               type="password"
             />
           </div>
           <div>
-            <label className="text-sm text-mist/70">Commits to analyze</label>
+            <label className={labelClasses}>Commits to analyze</label>
             <input
               type="number"
               min={1}
               max={25}
               value={maxCommits}
               onChange={(event) => setMaxCommits(Number(event.target.value))}
-              className="mt-2 w-full rounded-lg bg-ink/60 border border-tide/30 px-3 py-2 focus:outline-none focus:border-tide"
+              className={inputClasses}
             />
           </div>
           <div className="flex items-end">
-            <button
+            <Button
               onClick={handleAnalyze}
               disabled={loading}
-              className="rounded-full bg-neon text-ink px-6 py-2 font-semibold hover:bg-neon/90 disabled:opacity-60"
+              variant="primary"
             >
               {loading ? "Analyzing..." : "Analyze Repo"}
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
 
         {result && (
           <>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
               <StatsCard label="Avg Score" value={summary?.avgScore ?? 0} />
               <StatsCard
                 label="Avg Complexity"
@@ -159,58 +163,58 @@ export default function RepoQuality() {
               <StatsCard label="Files Analyzed" value={summary?.files ?? 0} />
             </div>
 
-            <div className="bg-panel rounded-2xl p-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Quality Score Trend</h2>
-                <span className="text-xs text-mist/60">
+            <Card>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Quality Score Trend</h2>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-md">
                   {result.analyzedCommits} commits analyzed
                 </span>
               </div>
               <TrendChart data={trendData} />
-            </div>
+            </Card>
 
-            <div className="bg-panel rounded-2xl p-6">
-              <h2 className="text-lg font-semibold mb-4">Commit Breakdown</h2>
+            <Card>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Commit Breakdown</h2>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-sm text-left">
                   <thead>
-                    <tr className="text-left text-mist/60">
-                      <th className="py-2">Date</th>
-                      <th className="py-2">Message</th>
-                      <th className="py-2">Score</th>
-                      <th className="py-2">Complexity</th>
-                      <th className="py-2">Dup %</th>
-                      <th className="py-2">Style</th>
-                      <th className="py-2">Files</th>
+                    <tr className="border-b border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400">
+                      <th className="py-3 font-medium">Date</th>
+                      <th className="py-3 font-medium">Message</th>
+                      <th className="py-3 font-medium text-right">Score</th>
+                      <th className="py-3 font-medium text-right">Complexity</th>
+                      <th className="py-3 font-medium text-right">Dup %</th>
+                      <th className="py-3 font-medium text-right">Style</th>
+                      <th className="py-3 font-medium text-right">Files</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                     {result.commits.map((commit) => (
-                      <tr key={commit.sha} className="border-t border-tide/10">
-                        <td className="py-3">
+                      <tr key={commit.sha} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                        <td className="py-3 text-gray-600 dark:text-gray-300">
                           {commit.date
                             ? new Date(commit.date).toLocaleDateString()
                             : "-"}
                         </td>
                         <td
-                          className="py-3 max-w-xs truncate"
+                          className="py-3 max-w-xs truncate font-medium text-gray-900 dark:text-white"
                           title={commit.message}
                         >
                           {commit.message}
                         </td>
-                        <td className="py-3 font-semibold text-neon">
+                        <td className="py-3 text-right font-semibold text-blue-600 dark:text-indigo-400">
                           {commit.score}
                         </td>
-                        <td className="py-3">{commit.complexity}</td>
-                        <td className="py-3">{commit.duplicationPercent}%</td>
-                        <td className="py-3">{commit.styleIssues}</td>
-                        <td className="py-3">{commit.filesAnalyzed}</td>
+                        <td className="py-3 text-right text-gray-600 dark:text-gray-300">{commit.complexity}</td>
+                        <td className="py-3 text-right text-gray-600 dark:text-gray-300">{commit.duplicationPercent}%</td>
+                        <td className="py-3 text-right text-gray-600 dark:text-gray-300">{commit.styleIssues}</td>
+                        <td className="py-3 text-right text-gray-600 dark:text-gray-300">{commit.filesAnalyzed}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            </div>
+            </Card>
           </>
         )}
       </div>

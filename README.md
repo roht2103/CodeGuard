@@ -1,61 +1,87 @@
-# CodeGuard
+<div align="center">
+  <img src="https://img.icons8.com/color/96/000000/shield.png" alt="CodeGuard Logo" width="80" />
+  <h1 align="center">CodeGuard 2.0</h1>
+  <p align="center">
+    <strong>Secure and Optimize Your Codebase with AI-Powered Static Analysis</strong>
+  </p>
+  <p align="center">
+    <img src="https://img.shields.io/badge/Frontend-React_18-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React" />
+    <img src="https://img.shields.io/badge/Backend-Spring_Boot_3-6DB33F?style=flat-square&logo=spring&logoColor=white" alt="Spring Boot" />
+    <img src="https://img.shields.io/badge/Database-PostgreSQL-336791?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/Styling-TailwindCSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white" alt="Tailwind" />
+  </p>
+</div>
 
-CodeGuard is a static code analysis and quality dashboard that scans source files, detects common vulnerabilities, and visualizes trends and metrics in a modern web UI.
-It also includes a GitHub repository analyzer that scores code quality trends by commit.
+<hr />
 
-## Tech Stack
+## 🚀 Overview
 
-- Backend: Java Spring Boot (Maven)
-- Frontend: React + Vite + TailwindCSS
-- Database: PostgreSQL
-- Auth: JWT
-- Deployments: Render (backend), Vercel (frontend)
+**CodeGuard** is a static code analysis platform and quality dashboard designed for modern engineering teams. It scans source files, detects common vulnerabilities, hardcoded secrets, and logic bugs, and visualizes codebase health trends in a sleek, SaaS-style web UI.
 
-## Local Setup
+It features a **GitHub Repository Analyzer** that evaluates code quality trends commit-by-commit, helping you monitor technical debt and ensure your team ships secure, production-ready code.
 
-### Backend
+## ✨ Key Features
 
-1. Create a PostgreSQL database named `codeguard`.
-2. Set the required environment variables:
-   - `DB_URL`
-   - `DB_USERNAME`
-   - `DB_PASSWORD`
-   - `JWT_SECRET`
-   - `JWT_EXPIRATION`
-   - `FRONTEND_URL`
-   - `GITHUB_TOKEN` (optional, for private repos or higher rate limits)
-3. From the backend folder:
-   - `mvn spring-boot:run`
+- **Instant Vulnerability Detection**: Drop in a file (`.js`, `.java`, `.py`) and instantly detect security flaws before they reach production.
+- **Repository Quality Tracking**: Connect a GitHub repository to monitor complexity, duplication, and style scores over time across multiple branches.
+- **Actionable Insights**: Get context-aware, line-by-line suggestions on how to resolve identified code smells.
+- **Modern Dashboard**: A clean, responsive dashboard featuring Light/Dark modes, trend charts, and actionable metrics.
 
-The API will run on port `8080`.
+## 🛠️ Tech Stack
 
-### Frontend
+- **Frontend**: React, Vite, Tailwind CSS, Recharts, React Router
+- **Backend**: Java, Spring Boot (Maven), JWT Authentication
+- **Database**: PostgreSQL
+- **Deployments**: Vercel (Frontend), Render (Backend)
 
-1. Set the environment variable in `frontend/.env`:
-   - `VITE_API_URL=http://localhost:8080`
-2. From the frontend folder:
-   - `npm install`
-   - `npm run dev`
+## 💻 Local Setup
 
-The app will run on port `5173` by default.
+### 1. Database
 
-## Environment Variables
+Create a PostgreSQL database named `codeguard`.
 
-### Backend
+### 2. Backend Environment Setup
 
-- `DB_URL` - JDBC URL for PostgreSQL
-- `DB_USERNAME` - Database username
-- `DB_PASSWORD` - Database password
-- `JWT_SECRET` - JWT signing key
-- `JWT_EXPIRATION` - Token expiration in milliseconds
-- `FRONTEND_URL` - Deployed frontend URL for CORS
-- `GITHUB_TOKEN` - Optional GitHub token used for repository analysis
+Navigate to the `backend/` directory and configure your environment variables. You can set these in your IDE or environment:
 
-### Frontend
+```env
+DB_URL=jdbc:postgresql://localhost:5432/codeguard
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+JWT_SECRET=your_super_secret_jwt_key_here
+JWT_EXPIRATION=86400000
+FRONTEND_URL=http://localhost:5173
+GITHUB_TOKEN=ghp_your_optional_github_token
+```
 
-- `VITE_API_URL` - Backend API base URL
+Run the backend server:
+```bash
+mvn spring-boot:run
+```
+*The API will start on port `8080`.*
 
-## Live Demo
+### 3. Frontend Environment Setup
 
-- Frontend: <YOUR_VERCEL_URL>
-- Backend: <YOUR_RENDER_URL>
+Navigate to the `frontend/` directory and create a `.env` file:
+
+```env
+VITE_API_URL=http://localhost:8080
+```
+
+Install dependencies and start the dev server:
+```bash
+npm install
+npm run dev
+```
+*The web app will start on port `5173`.*
+
+## 🌐 Live Demo
+
+- **Frontend**: `<YOUR_VERCEL_URL>`
+- **Backend API**: `<YOUR_RENDER_URL>`
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ by the CodeGuard team.</sub>
+</div>

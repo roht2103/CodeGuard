@@ -1,8 +1,14 @@
+import { Card } from "./Card.jsx";
+
 export default function StatsCard({ label, value }) {
   return (
-    <div className="bg-panel rounded-2xl p-4 glow">
-      <p className="text-xs uppercase tracking-widest text-mist/60">{label}</p>
-      <p className="text-2xl font-semibold mt-2 text-mist">{value}</p>
-    </div>
+    <Card className="p-5 flex flex-col justify-center">
+      <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+        {label}
+      </p>
+      <p className="mt-2 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
+        {value}
+      </p>
+    </Card>
   );
 }
