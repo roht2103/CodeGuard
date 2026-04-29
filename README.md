@@ -1,6 +1,7 @@
 # CodeGuard
 
 CodeGuard is a static code analysis and quality dashboard that scans source files, detects common vulnerabilities, and visualizes trends and metrics in a modern web UI.
+It also includes a GitHub repository analyzer that scores code quality trends by commit.
 
 ## Tech Stack
 
@@ -22,6 +23,7 @@ CodeGuard is a static code analysis and quality dashboard that scans source file
    - `JWT_SECRET`
    - `JWT_EXPIRATION`
    - `FRONTEND_URL`
+   - `GITHUB_TOKEN` (optional, for private repos or higher rate limits)
 3. From the backend folder:
    - `mvn spring-boot:run`
 
@@ -47,6 +49,7 @@ The app will run on port `5173` by default.
 - `JWT_SECRET` - JWT signing key
 - `JWT_EXPIRATION` - Token expiration in milliseconds
 - `FRONTEND_URL` - Deployed frontend URL for CORS
+- `GITHUB_TOKEN` - Optional GitHub token used for repository analysis
 
 ### Frontend
 

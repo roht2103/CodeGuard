@@ -27,6 +27,9 @@ export default function Navbar() {
               <Link className="hover:text-tide" to="/new-scan">
                 New Scan
               </Link>
+              <Link className="hover:text-tide" to="/repo-quality">
+                Repo Quality
+              </Link>
               <span className="text-tide hidden sm:inline">
                 {user?.name || "User"}
               </span>

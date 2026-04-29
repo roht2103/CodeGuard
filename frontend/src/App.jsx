@@ -6,6 +6,7 @@ import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import NewScan from "./pages/NewScan.jsx";
 import ScanDetail from "./pages/ScanDetail.jsx";
+import RepoQuality from "./pages/RepoQuality.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
 export default function App() {
@@ -34,6 +35,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <NewScan />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/repo-quality"
+          element={
+            <ProtectedRoute>
+              <RepoQuality />
             </ProtectedRoute>
           }
         />

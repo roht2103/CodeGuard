@@ -15,10 +15,13 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -40,6 +43,8 @@ public class ScannerService {
     private static final Pattern DEPRECATED = Pattern.compile("@Deprecated");
     private static final Pattern CONSOLE_LOG = Pattern.compile("console\\.log\\(");
     private static final Pattern MAGIC_NUMBER = Pattern.compile("(?<![.\\w])\\b([2-9]\\d{2,}|\\d{4,})\\b(?![.\\w%\"'])");
+    private static final Pattern JAVA_VAR_DECL = Pattern.compile("\\b(?:int|long|double|float|boolean|String|char|byte|short|var)\\s+([A-Za-z_][\\w]*)");
+    private static final Pattern JS_VAR_DECL = Pattern.compile("\\b(?:let|const|var)\\s+([A-Za-z_][\\w]*)");
 
     private final ScanRepository scanRepository;
 
@@ -54,41 +59,47 @@ public class ScannerService {
 
         String language = detectLanguage(file.getOriginalFilename());
         List<Vulnerability> vulnerabilities = new ArrayList<>();
+        List<String> lines = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
             String line;
-            int lineNumber = 0;
-            String previousNonEmptyLine = "";
-
             while ((line = reader.readLine()) != null) {
-                lineNumber++;
-                String trimmed = line.trim();
-
-                applyRules(language, line, lineNumber, vulnerabilities);
-
-                if (line.length() > 120) {
-                    vulnerabilities.add(buildVulnerability(Severity.LOW, "Long Line", lineNumber, line,
-                            "Line exceeds 120 characters.", "Split the line into smaller statements."));
-                }
-
-                if (MAGIC_NUMBER.matcher(line).find()) {
-                    vulnerabilities.add(buildVulnerability(Severity.LOW, "Magic Number", lineNumber, line,
-                            "Potential magic number detected.", "Extract the number into a named constant."));
-                }
-
-                if ("JAVA".equals(language) && isPublicMethod(line) && !previousNonEmptyLine.startsWith("/**")) {
-                    vulnerabilities.add(buildVulnerability(Severity.LOW, "Missing Javadoc", lineNumber, line,
-                            "Public method lacks Javadoc.", "Add a Javadoc comment describing the method."));
-                }
-
-                if (!trimmed.isEmpty()) {
-                    previousNonEmptyLine = trimmed;
-                }
+                lines.add(line);
             }
         } catch (IOException ex) {
             throw new ApiException("Failed to read uploaded file.", HttpStatus.BAD_REQUEST);
         }
+
+        String previousNonEmptyLine = "";
+        for (int index = 0; index < lines.size(); index++) {
+            String line = lines.get(index);
+            int lineNumber = index + 1;
+            String trimmed = line.trim();
+
+            applyRules(language, line, lineNumber, vulnerabilities);
+
+            if (line.length() > 120) {
+                vulnerabilities.add(buildVulnerability(Severity.LOW, "Long Line", lineNumber, line,
+                        "Line exceeds 120 characters.", "Split the line into smaller statements."));
+            }
+
+            if (MAGIC_NUMBER.matcher(line).find()) {
+                vulnerabilities.add(buildVulnerability(Severity.LOW, "Magic Number", lineNumber, line,
+                        "Potential magic number detected.", "Extract the number into a named constant."));
+            }
+
+            if ("JAVA".equals(language) && isPublicMethod(line) && !previousNonEmptyLine.startsWith("/**")) {
+                vulnerabilities.add(buildVulnerability(Severity.LOW, "Missing Javadoc", lineNumber, line,
+                        "Public method lacks Javadoc.", "Add a Javadoc comment describing the method."));
+            }
+
+            if (!trimmed.isEmpty()) {
+                previousNonEmptyLine = trimmed;
+            }
+        }
+
+        vulnerabilities.addAll(detectUnusedVariables(language, lines));
 
         SeverityCounts counts = countBySeverity(vulnerabilities);
         int qualityScore = calculateQualityScore(counts);
@@ -269,6 +280,54 @@ public class ScannerService {
         return new HashSet<>(List.of(value));
     }
 
+    private List<Vulnerability> detectUnusedVariables(String language, List<String> lines) {
+        if (!"JAVA".equals(language) && !"JAVASCRIPT".equals(language)) {
+            return List.of();
+        }
+
+        Pattern declPattern = "JAVA".equals(language) ? JAVA_VAR_DECL : JS_VAR_DECL;
+        Map<String, VariableDecl> declarations = new HashMap<>();
+
+        for (int index = 0; index < lines.size(); index++) {
+            String line = lines.get(index);
+            String trimmed = line.trim();
+            if (trimmed.startsWith("//") || trimmed.startsWith("/*") || trimmed.startsWith("*")) {
+                continue;
+            }
+            Matcher matcher = declPattern.matcher(line);
+            while (matcher.find()) {
+                String name = matcher.group(1);
+                if (name == null || name.startsWith("_")) {
+                    continue;
+                }
+                declarations.putIfAbsent(name, new VariableDecl(index + 1, line));
+            }
+        }
+
+        List<Vulnerability> results = new ArrayList<>();
+        for (Map.Entry<String, VariableDecl> entry : declarations.entrySet()) {
+            String name = entry.getKey();
+            VariableDecl decl = entry.getValue();
+            Pattern usagePattern = Pattern.compile("\\b" + Pattern.quote(name) + "\\b");
+            boolean used = false;
+            for (int index = 0; index < lines.size(); index++) {
+                if (index == decl.lineNumber - 1) {
+                    continue;
+                }
+                if (usagePattern.matcher(lines.get(index)).find()) {
+                    used = true;
+                    break;
+                }
+            }
+            if (!used) {
+                results.add(buildVulnerability(Severity.MEDIUM, "Unused Variable", decl.lineNumber, decl.lineContent,
+                        "Variable is declared but never used.", "Remove the variable or use it."));
+            }
+        }
+
+        return results;
+    }
+
     private static class Rule {
         private final Pattern pattern;
         private final Severity severity;
@@ -297,5 +356,15 @@ public class ScannerService {
         private int high;
         private int medium;
         private int low;
+    }
+
+    private static class VariableDecl {
+        private final int lineNumber;
+        private final String lineContent;
+
+        private VariableDecl(int lineNumber, String lineContent) {
+            this.lineNumber = lineNumber;
+            this.lineContent = lineContent;
+        }
     }
 }
