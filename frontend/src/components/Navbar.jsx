@@ -11,7 +11,10 @@ export default function Navbar() {
   return (
     <nav className="px-6 py-4">
       <div className="flex items-center justify-between max-w-6xl mx-auto">
-        <Link to={token ? "/dashboard" : "/login"} className="flex items-center gap-2">
+        <Link
+          to={token ? "/dashboard" : "/login"}
+          className="flex items-center gap-2"
+        >
           <ShieldCheck className="text-neon" size={28} />
           <span className="text-xl font-semibold tracking-wide">CodeGuard</span>
         </Link>
@@ -24,7 +27,9 @@ export default function Navbar() {
               <Link className="hover:text-tide" to="/new-scan">
                 New Scan
               </Link>
-              <span className="text-tide hidden sm:inline">{user?.name || "User"}</span>
+              <span className="text-tide hidden sm:inline">
+                {user?.name || "User"}
+              </span>
               <button
                 onClick={logout}
                 className="flex items-center gap-2 rounded-full border border-tide/40 px-3 py-1 text-tide hover:bg-tide/10"
