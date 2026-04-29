@@ -8,9 +8,9 @@ export default {
         ocean: "#1b4965",
         tide: "#5fa8d3",
         ember: "#ff6b35",
-        neon: "#00a896"
-      }
-    }
+        neon: "#00a896",
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 };

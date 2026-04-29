@@ -15,7 +15,10 @@ export default function App() {
     <div className="min-h-screen">
       <Navbar />
       <Routes>
-        <Route path="/" element={<Navigate to={token ? "/dashboard" : "/login"} replace />} />
+        <Route
+          path="/"
+          element={<Navigate to={token ? "/dashboard" : "/login"} replace />}
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route
