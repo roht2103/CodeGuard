@@ -5,7 +5,7 @@
 - [x] Clarify Project Requirements (Provided in user request.)
 <!-- Ask for project type, language, and frameworks if not specified. Skip if already provided. -->
 
-- [ ] Scaffold the Project
+- [x] Scaffold the Project (Created backend and frontend project structure.)
 <!--
 Ensure that the previous step has been marked as completed.
 Call project setup tool with projectType parameter.
@@ -15,7 +15,7 @@ If no appropriate projectType is available, search documentation using available
 Otherwise, create the project structure manually using available file creation tools.
 -->
 
-- [ ] Customize the Project
+- [x] Customize the Project (Implemented backend API, scanner logic, and frontend UI.)
 <!--
 Verify that all previous steps have been completed successfully and you have marked the step as completed.
 Develop a plan to modify codebase according to user requirements.
@@ -23,7 +23,7 @@ Apply modifications using appropriate tools and user-provided references.
 Skip this step for "Hello World" projects.
 -->
 
-- [ ] Install Required Extensions
+- [x] Install Required Extensions (No extensions needed.)
 <!-- ONLY install extensions provided mentioned in the get_project_setup_info. Skip this step otherwise and mark as completed. -->
 
 - [ ] Compile the Project
