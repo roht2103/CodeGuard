@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard.jsx";
 import NewScan from "./pages/NewScan.jsx";
 import ScanDetail from "./pages/ScanDetail.jsx";
 import RepoQuality from "./pages/RepoQuality.jsx";
+import Docs from "./pages/Docs.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/docs" element={<Docs />} />
           <Route
             path="/dashboard"
             element={

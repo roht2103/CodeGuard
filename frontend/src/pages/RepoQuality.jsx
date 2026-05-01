@@ -51,6 +51,10 @@ export default function RepoQuality() {
       toast.error("Provide the GitHub owner and repo.");
       return;
     }
+    if (!token) {
+      toast.error("Provide a GitHub Token to perform the analysis.");
+      return;
+    }
     setLoading(true);
     try {
       const response = await api.post("/api/repos/analyze", {
@@ -112,15 +116,19 @@ export default function RepoQuality() {
           </div>
           <div>
             <label className={labelClasses}>
-              GitHub Token (optional)
+              GitHub Token
             </label>
             <input
+              required  
               value={token}
               onChange={(event) => setToken(event.target.value)}
               className={inputClasses}
               placeholder="ghp_xxx"
               type="password"
             />
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              Need a token? <a href="/docs" className="text-blue-600 hover:underline dark:text-blue-400">Read the docs</a>
+            </p>
           </div>
           <div>
             <label className={labelClasses}>Commits to analyze</label>

@@ -29,6 +29,9 @@ export default function Navbar() {
           <span className="text-xl font-semibold tracking-tight">CodeGuard</span>
         </Link>
         <div className="flex items-center gap-6">
+          <Link className={navLinkClass("/docs")} to="/docs">
+            Docs
+          </Link>
           {token ? (
             <>
               <div className="hidden md:flex items-center gap-6 mr-4">
