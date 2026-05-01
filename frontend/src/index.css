@@ -4,6 +4,6 @@
 
 @layer base {
   body {
-    @apply bg-white text-gray-900 antialiased dark:bg-black dark:text-gray-100 transition-colors duration-200;
+    @apply bg-white text-gray-900 antialiased dark:bg-[#0B1120] dark:text-gray-100 transition-colors duration-200;
   }
 }

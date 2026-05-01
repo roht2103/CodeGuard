@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["'Space Grotesk'", "'Outfit'", "sans-serif"],
         mono: ["'JetBrains Mono'", "monospace"],
       },
     },

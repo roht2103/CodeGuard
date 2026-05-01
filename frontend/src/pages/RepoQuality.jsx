@@ -73,21 +73,22 @@ export default function RepoQuality() {
     }
   };
 
-  const inputClasses = "mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-gray-800 dark:bg-black dark:text-white dark:focus:border-white dark:focus:ring-white transition-colors shadow-sm";
-  const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-300";
+  const inputClasses = "mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-900 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 dark:border-white/10 dark:bg-[#111827] dark:text-white dark:focus:border-white dark:focus:ring-white transition-all shadow-sm";
+  const labelClasses = "block text-sm font-bold text-gray-700 dark:text-gray-300";
 
   return (
     <div className="px-6 py-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Repo Quality Dashboard</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <div className="mb-8">
+          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">Repo Quality Dashboard</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">
             Analyze a GitHub repository for complexity, duplication, and style trends.
           </p>
         </div>
 
-        <Card className="grid gap-6 md:grid-cols-2">
-          <div>
+        <Card className="p-6 md:p-8">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
             <label className={labelClasses}>Owner</label>
             <input
               value={owner}
@@ -149,6 +150,7 @@ export default function RepoQuality() {
             >
               {loading ? "Analyzing..." : "Analyze Repo"}
             </Button>
+          </div>
           </div>
         </Card>
 
