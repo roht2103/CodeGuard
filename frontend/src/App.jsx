@@ -9,6 +9,8 @@ import NewScan from "./pages/NewScan.jsx";
 import ScanDetail from "./pages/ScanDetail.jsx";
 import RepoQuality from "./pages/RepoQuality.jsx";
 import Docs from "./pages/Docs.jsx";
+import Privacy from "./pages/Privacy.jsx";
+import Terms from "./pages/Terms.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
 export default function App() {
@@ -26,6 +28,8 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/docs" element={<Docs />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
           <Route
             path="/dashboard"
             element={

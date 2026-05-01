@@ -19,7 +19,7 @@ export default function Navbar() {
     );
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/80">
+    <nav className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md dark:border-white/10 dark:bg-black/80">
       <div className="flex h-16 items-center justify-between px-6 max-w-7xl mx-auto">
         <Link
           to={token ? "/dashboard" : "/login"}

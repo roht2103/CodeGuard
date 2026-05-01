@@ -73,7 +73,7 @@ export default function RepoQuality() {
     }
   };
 
-  const inputClasses = "mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-950 dark:text-white dark:focus:border-indigo-500 dark:focus:ring-indigo-500 transition-colors";
+  const inputClasses = "mt-1.5 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-black focus:outline-none focus:ring-1 focus:ring-black dark:border-gray-800 dark:bg-black dark:text-white dark:focus:border-white dark:focus:ring-white transition-colors shadow-sm";
   const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-300";
 
   return (

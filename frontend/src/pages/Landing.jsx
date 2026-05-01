@@ -136,9 +136,9 @@ export default function Landing() {
           </div>
           
           <div className="flex gap-8 text-sm text-gray-500 dark:text-gray-400">
-            <a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors">Privacy</a>
-            <a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors">Terms</a>
-            <a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors">Documentation</a>
+            <Link to="/privacy" className="hover:text-gray-900 dark:hover:text-white transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-gray-900 dark:hover:text-white transition-colors">Terms</Link>
+            <Link to="/docs" className="hover:text-gray-900 dark:hover:text-white transition-colors">Documentation</Link>
           </div>
           
           <div className="text-sm text-gray-500 dark:text-gray-400">
