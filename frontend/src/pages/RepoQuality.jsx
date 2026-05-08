@@ -173,52 +173,54 @@ export default function RepoQuality() {
               <StatsCard label="Files Analyzed" value={summary?.files ?? 0} />
             </div>
 
-            <Card>
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Quality Score Trend</h2>
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-md">
+            <Card className="p-6 md:p-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Quality Score Trend</h2>
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-white/10">
                   {result.analyzedCommits} commits analyzed
                 </span>
               </div>
               <TrendChart data={trendData} />
             </Card>
 
-            <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Commit Breakdown</h2>
+            <Card className="overflow-hidden p-0 border-gray-200 dark:border-white/10">
+              <div className="px-6 py-5 border-b border-gray-200 dark:border-white/5">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">Commit Breakdown</h2>
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
                   <thead>
-                    <tr className="border-b border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400">
-                      <th className="py-3 font-medium">Date</th>
-                      <th className="py-3 font-medium">Message</th>
-                      <th className="py-3 font-medium text-right">Score</th>
-                      <th className="py-3 font-medium text-right">Complexity</th>
-                      <th className="py-3 font-medium text-right">Dup %</th>
-                      <th className="py-3 font-medium text-right">Style</th>
-                      <th className="py-3 font-medium text-right">Files</th>
+                    <tr className="border-b border-gray-100 dark:border-white/5 text-gray-500 dark:text-gray-400/70 bg-gray-50/50 dark:bg-transparent">
+                      <th className="px-6 py-4 font-bold text-xs uppercase tracking-widest">Date</th>
+                      <th className="px-6 py-4 font-bold text-xs uppercase tracking-widest">Message</th>
+                      <th className="px-6 py-4 font-bold text-xs uppercase tracking-widest text-right">Score</th>
+                      <th className="px-6 py-4 font-bold text-xs uppercase tracking-widest text-right">Complexity</th>
+                      <th className="px-6 py-4 font-bold text-xs uppercase tracking-widest text-right">Dup %</th>
+                      <th className="px-6 py-4 font-bold text-xs uppercase tracking-widest text-right">Style</th>
+                      <th className="px-6 py-4 font-bold text-xs uppercase tracking-widest text-right">Files</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                  <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                     {result.commits.map((commit) => (
-                      <tr key={commit.sha} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                        <td className="py-3 text-gray-600 dark:text-gray-300">
+                      <tr key={commit.sha} className="group hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
                           {commit.date
                             ? new Date(commit.date).toLocaleDateString()
                             : "-"}
                         </td>
                         <td
-                          className="py-3 max-w-xs truncate font-medium text-gray-900 dark:text-white"
+                          className="px-6 py-4 max-w-xs truncate font-medium text-gray-900 dark:text-white"
                           title={commit.message}
                         >
                           {commit.message}
                         </td>
-                        <td className="py-3 text-right font-semibold text-blue-600 dark:text-indigo-400">
+                        <td className="px-6 py-4 text-right font-semibold text-blue-600 dark:text-indigo-400">
                           {commit.score}
                         </td>
-                        <td className="py-3 text-right text-gray-600 dark:text-gray-300">{commit.complexity}</td>
-                        <td className="py-3 text-right text-gray-600 dark:text-gray-300">{commit.duplicationPercent}%</td>
-                        <td className="py-3 text-right text-gray-600 dark:text-gray-300">{commit.styleIssues}</td>
-                        <td className="py-3 text-right text-gray-600 dark:text-gray-300">{commit.filesAnalyzed}</td>
+                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">{commit.complexity}</td>
+                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">{commit.duplicationPercent}%</td>
+                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">{commit.styleIssues}</td>
+                        <td className="px-6 py-4 text-right text-gray-600 dark:text-gray-300">{commit.filesAnalyzed}</td>
                       </tr>
                     ))}
                   </tbody>

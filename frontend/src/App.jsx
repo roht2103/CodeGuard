@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard.jsx";
 import NewScan from "./pages/NewScan.jsx";
 import ScanDetail from "./pages/ScanDetail.jsx";
 import RepoQuality from "./pages/RepoQuality.jsx";
+import History from "./pages/History.jsx";
+import RepoScanDetail from "./pages/RepoScanDetail.jsx";
 import Docs from "./pages/Docs.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Terms from "./pages/Terms.jsx";
@@ -59,6 +61,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <ScanDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <History />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/repo-scans/:id"
+            element={
+              <ProtectedRoute>
+                <RepoScanDetail />
               </ProtectedRoute>
             }
           />

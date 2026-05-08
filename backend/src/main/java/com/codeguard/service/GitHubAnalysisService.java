@@ -3,7 +3,12 @@ package com.codeguard.service;
 import com.codeguard.dto.CommitQualityResponse;
 import com.codeguard.dto.RepoAnalyzeRequest;
 import com.codeguard.dto.RepoAnalysisResponse;
+import com.codeguard.dto.RepoScanSummaryResponse;
 import com.codeguard.exception.ApiException;
+import com.codeguard.model.RepoCommit;
+import com.codeguard.model.RepoScan;
+import com.codeguard.model.User;
+import com.codeguard.repository.RepoScanRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +22,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -40,25 +47,33 @@ public class GitHubAnalysisService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final String defaultToken;
+    private final RepoScanRepository repoScanRepository;
 
-    public GitHubAnalysisService(@Value("${app.github.token:}") String defaultToken) {
+    public GitHubAnalysisService(@Value("${app.github.token:}") String defaultToken, RepoScanRepository repoScanRepository) {
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
         this.defaultToken = defaultToken;
+        this.repoScanRepository = repoScanRepository;
     }
 
-    public RepoAnalysisResponse analyzeRepository(RepoAnalyzeRequest request) {
+    public RepoAnalysisResponse analyzeRepository(RepoAnalyzeRequest request, User user) {
+        String owner = request.getOwner() == null ? "" : request.getOwner().trim();
+        String repo = request.getRepo() == null ? "" : request.getRepo().trim();
+        String branch = request.getBranch() == null ? "" : request.getBranch().trim();
+        String inputToken = request.getToken() == null ? "" : request.getToken().trim();
+
         int maxCommits = normalizeMaxCommits(request.getMaxCommits());
-        String token = resolveToken(request.getToken());
+        String token = resolveToken(inputToken);
 
         String commitsUrl = String.format("https://api.github.com/repos/%s/%s/commits?per_page=%d",
-                request.getOwner(), request.getRepo(), maxCommits);
-        if (request.getBranch() != null && !request.getBranch().isBlank()) {
-            commitsUrl += "&sha=" + request.getBranch();
+                owner, repo, maxCommits);
+        if (!branch.isEmpty()) {
+            commitsUrl += "&sha=" + branch;
         }
 
         List<Map<String, Object>> commitItems = fetchJsonList(commitsUrl, token);
         List<CommitQualityResponse> commits = new ArrayList<>();
+        List<RepoCommit> repoCommits = new ArrayList<>();
 
         for (Map<String, Object> commitItem : commitItems) {
             String sha = (String) commitItem.get("sha");
@@ -67,9 +82,20 @@ public class GitHubAnalysisService {
             Map<String, Object> committer = commitDetails == null ? null : castMap(commitDetails.get("committer"));
             String date = committer == null ? Instant.now().toString() : (String) committer.getOrDefault("date", "");
 
-            CommitMetrics metrics = analyzeCommit(request.getOwner(), request.getRepo(), sha, token);
+            CommitMetrics metrics = analyzeCommit(owner, repo, sha, token);
 
             commits.add(CommitQualityResponse.builder()
+                    .sha(sha)
+                    .message(message)
+                    .date(date)
+                    .score(metrics.score)
+                    .complexity(metrics.complexity)
+                    .duplicationPercent(metrics.duplicationPercent)
+                    .styleIssues(metrics.styleIssues)
+                    .filesAnalyzed(metrics.filesAnalyzed)
+                    .build());
+
+            repoCommits.add(RepoCommit.builder()
                     .sha(sha)
                     .message(message)
                     .date(date)
@@ -82,14 +108,96 @@ public class GitHubAnalysisService {
         }
 
         Collections.reverse(commits);
+        Collections.reverse(repoCommits);
+
+        int avgScore = repoCommits.isEmpty() ? 0 : 
+            (int) Math.round(repoCommits.stream().mapToInt(RepoCommit::getScore).average().orElse(0));
+
+        RepoScan repoScan = RepoScan.builder()
+                .user(user)
+                .owner(owner)
+                .repo(repo)
+                .branch(branch.isEmpty() ? null : branch)
+                .analyzedCommits(commits.size())
+                .avgScore(avgScore)
+                .build();
+
+        for (RepoCommit rc : repoCommits) {
+            rc.setRepoScan(repoScan);
+        }
+        repoScan.setCommits(repoCommits);
+
+        repoScanRepository.save(repoScan);
 
         return RepoAnalysisResponse.builder()
-                .owner(request.getOwner())
-                .repo(request.getRepo())
-                .branch(request.getBranch())
-                .analyzedCommits(commits.size())
+                .id(repoScan.getId())
+                .owner(repoScan.getOwner())
+                .repo(repoScan.getRepo())
+                .branch(repoScan.getBranch())
+                .analyzedCommits(repoScan.getAnalyzedCommits())
+                .scannedAt(repoScan.getScannedAt())
                 .commits(commits)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<RepoScanSummaryResponse> getScansByUser(User user) {
+        return repoScanRepository.findByUserIdOrderByScannedAtDesc(user.getId()).stream()
+                .map(scan -> RepoScanSummaryResponse.builder()
+                        .id(scan.getId())
+                        .owner(scan.getOwner())
+                        .repo(scan.getRepo())
+                        .branch(scan.getBranch())
+                        .analyzedCommits(scan.getAnalyzedCommits())
+                        .scannedAt(scan.getScannedAt())
+                        .avgScore(scan.getAvgScore() == null ? 0 : scan.getAvgScore())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public RepoAnalysisResponse getScanById(Long id, User user) {
+        RepoScan repoScan = repoScanRepository.findById(id)
+                .orElseThrow(() -> new ApiException("Repo Scan not found.", HttpStatus.NOT_FOUND));
+
+        if (!repoScan.getUser().getId().equals(user.getId())) {
+            throw new ApiException("Access denied.", HttpStatus.FORBIDDEN);
+        }
+
+        List<CommitQualityResponse> commits = repoScan.getCommits().stream()
+                .map(rc -> CommitQualityResponse.builder()
+                        .sha(rc.getSha())
+                        .message(rc.getMessage())
+                        .date(rc.getDate())
+                        .score(rc.getScore())
+                        .complexity(rc.getComplexity())
+                        .duplicationPercent(rc.getDuplicationPercent())
+                        .styleIssues(rc.getStyleIssues())
+                        .filesAnalyzed(rc.getFilesAnalyzed())
+                        .build())
+                .collect(Collectors.toList());
+
+        return RepoAnalysisResponse.builder()
+                .id(repoScan.getId())
+                .owner(repoScan.getOwner())
+                .repo(repoScan.getRepo())
+                .branch(repoScan.getBranch())
+                .analyzedCommits(repoScan.getAnalyzedCommits())
+                .scannedAt(repoScan.getScannedAt())
+                .commits(commits)
+                .build();
+    }
+
+    @Transactional
+    public void deleteScan(Long id, User user) {
+        RepoScan repoScan = repoScanRepository.findById(id)
+                .orElseThrow(() -> new ApiException("Repo Scan not found.", HttpStatus.NOT_FOUND));
+
+        if (!repoScan.getUser().getId().equals(user.getId())) {
+            throw new ApiException("Access denied.", HttpStatus.FORBIDDEN);
+        }
+
+        repoScanRepository.delete(repoScan);
     }
 
     private CommitMetrics analyzeCommit(String owner, String repo, String sha, String token) {
@@ -235,9 +343,19 @@ public class GitHubAnalysisService {
             }
             return response.getBody() == null ? "{}" : response.getBody();
         } catch (RestClientResponseException ex) {
-            String statusText = ex.getStatusText() == null ? "" : ex.getStatusText();
-            String message = "GitHub API error: " + ex.getRawStatusCode() + " " + statusText;
-            throw new ApiException(message.trim(), HttpStatus.BAD_GATEWAY);
+            int statusCode = ex.getRawStatusCode();
+            String message;
+            if (statusCode == 404) {
+                message = "GitHub API returned 404 Not Found. Please verify the owner, repository name, and branch exist, and ensure your token has access.";
+            } else if (statusCode == 401) {
+                message = "GitHub API returned 401 Unauthorized. Your GitHub Token is invalid or expired.";
+            } else if (statusCode == 403) {
+                message = "GitHub API returned 403 Forbidden. You may have exceeded the API rate limit or lack permissions.";
+            } else {
+                String statusText = ex.getStatusText() == null ? "" : ex.getStatusText();
+                message = "GitHub API error: " + statusCode + " " + statusText;
+            }
+            throw new ApiException(message.trim(), HttpStatus.BAD_REQUEST);
         }
     }
 
