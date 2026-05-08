@@ -7,6 +7,7 @@ import StatsCard from "../components/StatsCard.jsx";
 import TrendChart from "../components/TrendChart.jsx";
 import { Card } from "../components/Card.jsx";
 import { Button } from "../components/Button.jsx";
+import ConfirmModal from "../components/ConfirmModal.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Dashboard() {
@@ -15,6 +16,7 @@ export default function Dashboard() {
   const [repoScans, setRepoScans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortType, setSortType] = useState('none');
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const { logout } = useAuth();
 
   useEffect(() => {
@@ -71,6 +73,23 @@ export default function Dashboard() {
 
   const handleSortClick = () => {
     setSortType(prev => prev === 'none' ? 'asc' : prev === 'asc' ? 'desc' : 'none');
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { id, type: scanType } = deleteTarget;
+    try {
+      if (scanType === 'file') {
+        await api.delete(`/api/scans/${id}`);
+        setScans(prev => prev.filter(scan => scan.id !== id));
+      } else {
+        await api.delete(`/api/repos/scans/${id}`);
+        setRepoScans(prev => prev.filter(scan => scan.id !== id));
+      }
+      toast.success("Analysis deleted.");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete analysis.");
+    }
   };
 
   return (
@@ -237,7 +256,10 @@ export default function Dashboard() {
                             >
                               Report
                             </Link>
-                            <button className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-lg text-red-600 hover:text-red-700 bg-white border border-gray-200 hover:bg-red-50 dark:bg-transparent dark:border-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-500/10 transition-colors">
+                            <button 
+                              onClick={() => setDeleteTarget({ id: scan.id, type: scan.scanType })}
+                              className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-lg text-red-600 hover:text-red-700 bg-white border border-gray-200 hover:bg-red-50 dark:bg-transparent dark:border-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-500/10 transition-colors"
+                            >
                               Delete
                             </button>
                           </td>
@@ -259,6 +281,14 @@ export default function Dashboard() {
           )}
         </div>
       </main>
+
+      <ConfirmModal 
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
+        title="Delete Analysis"
+        message="Are you sure you want to delete this analysis? This action cannot be undone."
+      />
     </div>
   );
 }
